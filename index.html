@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CS5495 课程项目 · 图像标注</title>
+<style>
+  body { margin: 0; background: #14171c; color: #e8eaed; line-height: 1.65;
+         font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 24px; margin: 0 0 6px; }
+  h2 { font-size: 17px; margin: 34px 0 10px; color: #cfd6df; }
+  p, li { font-size: 14px; color: #c2cad4; }
+  a { color: #7fb3ff; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #262d36; vertical-align: top; }
+  th { color: #9aa4b2; font-weight: 600; }
+  code { background: #222933; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+  .tag { display: inline-block; font-size: 12px; padding: 1px 7px; border-radius: 999px;
+          background: #22303f; color: #8fb8ff; margin-left: 6px; }
+  .note { background: #1d2229; border: 1px solid #2b323c; border-radius: 8px;
+           padding: 12px 14px; margin: 14px 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>多模态仇恨言论检测模型的图像标注</h1>
+  <p>CS5495 Explainable AI 课程项目 · 内部标注页 <span class="tag">不公开索引</span></p>
+
+  <h2>这个项目在做什么</h2>
+  <p>被审计的模型是 <code>Amirhossein75/clip-vit-base-mmhs150k-mtl</code>：CLIP 的图像塔与文本塔，
+  加一个门控融合和五个类别头，输入是「推文文字 + 配图」。模型的准确率已经验证过与作者公布的一致，
+  所以问题不是「它准不准」，而是<b>它到底有没有用图</b>。</p>
+  <p>现有结论是文字主导：模态 Shapley 分解里文字平均贡献 +0.047，图像只有 +0.0014，
+  文本主导 99.4% 的样本。这个结论要成立，必须先排除三种解释方式上的伪影，
+  而这三件事都只能靠人眼判断，机器判不了。</p>
+
+  <h2>需要标注什么</h2>
+  <table>
+    <thead><tr><th>页面</th><th>数量</th><th>判断什么</th><th>用来做什么</th></tr></thead>
+    <tbody>
+      <tr><td><a href="gold.html">gold.html</a></td><td>200</td>
+          <td>图里有没有可读的文字</td>
+          <td>OCR 金标准：算出 EasyOCR 的检出率与误检率，说明分组误差的方向</td></tr>
+      <tr><td><a href="concept.html">concept.html</a></td><td>1924</td>
+          <td>图里有没有可读的文字</td>
+          <td>概念集 QC：末尾 100 张是盲复标，用来算标注一致率（门槛 0.8）</td></tr>
+      <tr><td><a href="membership.html">membership.html</a></td><td>600</td>
+          <td>这张图是否属于页面上写的那个概念</td>
+          <td>概念归属抽检：概念集是检测器自动生成的，这一步测它的敏感度与特异度</td></tr>
+    </tbody>
+  </table>
+  <p>三个页面合计 <b>2724</b> 次判断。全部做完约 70–100 分钟；只做 gold 与 membership（800 次）
+  约 25 分钟，也够支撑报告里需要人工数据的两处结论。</p>
+
+  <h2>怎么标</h2>
+  <ol>
+    <li>先点开一个页面，在右上角填<b>标注者代号</b>，导出的文件名会带这个名字。</li>
+    <li>键盘 <code>1</code> / <code>2</code> / <code>3</code> 选择，<code>←</code> 回退到上一张，选完自动跳下一张。</li>
+    <li>进度存在浏览器本地，关掉页面再打开会从第一张没标的继续。</li>
+    <li>标完点<b>「导出结果」</b>，把下载的 JSON 发回给项目组，放进 <code>annotate/out/</code> 后由脚本合并。</li>
+  </ol>
+  <div class="note">
+    <b>两点要求。</b>一是按第一眼判断，不要放大反复找；二是不要顺着某一类图的规律去猜，
+    页面故意不显示检测结果和样本来源，就是为了让判断独立。
+  </div>
+
+  <h2>关于数据</h2>
+  <p>图片来自公开数据集 MMHS150K，内容是真实的推文配图，包含仇恨言论与冒犯性画面。
+  标注结果只用于这次课程作业的统计分析，不用于训练模型，不对外发布，不进入任何公开数据集。</p>
+  <p>这个站点是公开可访问的 GitHub Pages，没有登录。链接不要转发到公开渠道；
+  页面加了 <code>noindex</code>，不会被搜索引擎收录，但拿到链接的人都能打开。</p>
+</main>
+</body>
+</html>
